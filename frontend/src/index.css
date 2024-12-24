@@ -3,5 +3,6 @@
 @tailwind utilities;
 
 * {
-    @apply transition-colors duration-300;
+    transition: color 1000ms ease-in-out;
+    transition: background-color 1000ms ease-in-out;
 }

@@ -4,6 +4,7 @@ import CreateProduct from "./pages/CreateProduct";
 import { BrowserRouter, Routes, Route } from "react-router";
 import Products from "./pages/Products";
 import "bootstrap/dist/css/bootstrap.min.css";
+import UserAuth from "./pages/UserAuth";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/create" element={<CreateProduct />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/userauth" element={<UserAuth />} />
         </Routes>
       </BrowserRouter>
     </div>
