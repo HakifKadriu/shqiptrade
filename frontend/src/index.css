@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    transition: color 1000ms ease-in-out;
+    transition: background-color 1000ms ease-in-out;
+    /* background-color: #F9F7F7; */
+}
