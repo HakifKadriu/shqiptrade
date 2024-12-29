@@ -17,7 +17,7 @@ const RegisterComponent = () => {
     e.preventDefault();
     try {
       await signup(name, email, password);
-      navigate("/verify-email");
+      navigate("/");
       Toast.fire({
         icon: "success",
         title: "Account created successfully.",

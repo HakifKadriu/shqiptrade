@@ -30,6 +30,7 @@ const sendEmail = async (to, subject, htmlContent) => {
     };
 
     const response = await transactionalEmailsApi.sendTransacEmail(emailData);
+    console.log("email sent successfully to: ", to);
   } catch (error) {
     console.error("Error sending email:", error.message);
   }

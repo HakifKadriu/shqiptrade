@@ -17,17 +17,17 @@ const Profile = () => {
           <div className=" ">{user.name}</div>
           <div className="font-bold">Email:</div>
           <div>{user.email}</div>
-          <div className="font-bold">Verified: </div>
-          <div>{user.isVerified === true ? "True" : "False"}</div>
+          {/* <div className="font-bold">Verified: </div> */}
+          {/* <div>{user.isVerified === true ? "True" : "False"}</div> */}
         </div>
-        {!user.isVerified && (
+        {/* {!user.isVerified && (
           <button
             className="bg-tertiaryd text-black w-fit p-1 rounded-xl self-center"
             onClick={() => navigate("/verify-email")}
           >
             Verify Email
           </button>
-        )}
+        )} */}
       </div>
     </Container>
   );

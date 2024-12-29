@@ -85,14 +85,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
+          {/* <Route
             path="/verify-email"
             element={
               <IfAuthButNotVerified>
                 <VerifyEmail />
               </IfAuthButNotVerified>
             }
-          />
+          /> */}
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
