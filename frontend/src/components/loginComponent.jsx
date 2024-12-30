@@ -18,17 +18,17 @@ const LoginComponent = () => {
     Toast.fire({
       icon: "success",
       title: "Logged in successfully",
-    })
+    });
   };
 
   return (
     <Container className="flex flex-col items-center dark:text-white w-[20rem]">
       <div className="mt-8 p-4 rounded">
-        <h1 className="text-3xl mb-12 ">Log In</h1>
+        <h1 className="text-3xl mb-12 font-semibold ">Log In</h1>
         <form onSubmit={handleLogin} className="space-y-4 w-[15rem]">
           <input
             type="text"
-            className="form-control dark:bg-[#393E46] dark:text-white dark:focus:bg-[#393E46]  dark:placeholder:text-white"
+            className="form-control dark:bg-thirdd dark:text-white border-0 dark:placeholder:text-white dark:focus:ring-4 dark:focus:ring-fifthd hover:ring-2 dark:hover:ring-fifthd"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -37,7 +37,7 @@ const LoginComponent = () => {
 
           <input
             type="password"
-            className="form-control dark:bg-[#393E46] dark:text-white dark:focus:bg-[#393E46]  dark:placeholder:text-white"
+            className="form-control dark:bg-thirdd dark:text-white border-0 dark:placeholder:text-white dark:focus:ring-4 dark:focus:ring-fifthd hover:ring-2 dark:hover:ring-fifthd"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -47,14 +47,14 @@ const LoginComponent = () => {
           <button
             type="button"
             onClick={() => navigate("/forgot-password")}
-            className="!mt-12 text-xs "
+            className="!mt-12 text-xs"
           >
             Forgot your password?
           </button>
 
           <button
             type="submit"
-            className="mt-1 font-medium bg-buttond dark:bg-buttond  text-white p-1 rounded-md w-full"
+            className="mt-1 border dark:bg-fifthd bg-fifthl  dark:text-white font-semibold  p-1 rounded-md w-full"
           >
             Log In
           </button>

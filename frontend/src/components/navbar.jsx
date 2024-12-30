@@ -48,26 +48,29 @@ const Navbar = () => {
   };
 
   return (
-    <Container fluid={true} className="sticky top-0 z-10  dark:bg-[#222831]">
+    <Container
+      fluid={true}
+      className="sticky top-0 z-10  bg-transparent backdrop-blur-md"
+    >
       <div className="p-3 flex border-b justify-between">
         <div className="text-2xl font-bold">
           <Link to={"/"} className="duration-0 dark:text-white">
             Shqip Trade
           </Link>
         </div>
-        <div className="flex gap-1">
+        <div className="flex gap-1 items-center">
           <Link
-            to={"/products"}
+            to={"/explore"}
             className="text-sm hover:border-b border-black p-1 dark:text-white"
           >
-            My Products
+            Explore
           </Link>
-          <Link
-            to={"/create"}
+          {/* <Link
+            to={"/create-product"}
             className="text-sm hover:border-b border-black p-1 dark:text-white"
           >
             Add Product
-          </Link>
+          </Link> */}
         </div>
         <div className="flex gap-2 dark:text-white">
           <button onClick={toggleDarkMode} className="w-8">
@@ -77,23 +80,29 @@ const Navbar = () => {
             <Dropdown>
               <Dropdown.Toggle
                 size="sm"
-                className="after:hidden bg-transparent !fill-white border-0 text-black dark:!text-white"
+                className="after:hidden bg-transparent  border-0 text-black dark:!text-white"
               >
                 <Image
                   src={darkMode ? profilelight : profile}
                   className="w-8"
                 />
               </Dropdown.Toggle>
-              <Dropdown.Menu className="dark:bg-secondaryd ">
+              <Dropdown.Menu className="dark:bg-thirdd ">
                 <Dropdown.Item
                   onClick={() => navigate("/profile")}
-                  className="dark:!text-white hover:bg-transparent"
+                  className="dark:!text-white bg-transparent hover:bg-transparent"
                 >
                   My Profile
                 </Dropdown.Item>
                 <Dropdown.Item
+                  onClick={() => navigate("/products")}
+                  className="dark:!text-white bg-transparent hover:bg-transparent"
+                >
+                  My Products
+                </Dropdown.Item>
+                <Dropdown.Item
                   onClick={handleLogout}
-                  className="dark:!text-white hover:bg-transparent"
+                  className="dark:!text-white bg-transparent hover:bg-transparent"
                 >
                   Log Out
                 </Dropdown.Item>
@@ -101,7 +110,10 @@ const Navbar = () => {
             </Dropdown>
           ) : (
             <div onClick={() => navigate("/auth")}>
-              <Image src={darkMode ? loginwhite : logindark} className="w-8 cursor-pointer" />
+              <Image
+                src={darkMode ? loginwhite : logindark}
+                className="w-8 cursor-pointer"
+              />
             </div>
           )}
 

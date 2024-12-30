@@ -4,10 +4,22 @@ export default {
   theme: {
     extend: {
       colors: {
-        primaryd: "#222831",
-        secondaryd: "#393E46",
-        tertiaryd: "#00ADB5",
-        buttond: "#323232",
+        firstd: "#000814",
+        secondd: "#262626", // secondary bg
+        thirdd: "#404040", // placeholder
+        fourthd: "#ffc300ff", 
+        fifthd: "#0d0d0d", // button
+
+        firstl: "#edede9ff",
+        secondl: "#d6ccc2ff",
+        thirdl: "#f5ebe0ff",
+        fourthl: "#e3d5caff",
+        fifthl: "#d5bdafff",
+      },
+      screens: {
+        tablet: "640px",
+        laptop: "1024px",
+        desktop: "1280px",
       },
     },
   },

@@ -3,33 +3,37 @@ import Container from "react-bootstrap/Container";
 import Stack from "react-bootstrap/Stack";
 import Productcard from "../components/productcard";
 import { useProductStore } from "../store/product";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useAuthStore } from "../store/auth";
 
 const Products = () => {
-  let navigate = useNavigate();
+  const { fetchProducts, products, error, message, isLoading } =
+    useProductStore();
+  const { user } = useAuthStore();
 
-  const { fetchProducts, products } = useProductStore();
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(user._id);
   }, [fetchProducts]);
 
   return (
-    <Container className="min-h-svh flex flex-wrap justify-center gap-3 pt-4">
-      {products.map((product) => (
-        <Productcard key={product._id} product={product} />
-      ))}
-
-      {products.length === 0 && (
-        <div className="flex flex-col items-center dark:text-white">
-          <div>There are no products available.</div>
-          <div
-            className="font-bold cursor-pointer"
-            onClick={() => navigate("/create")}
-          >
-            Add Product
-          </div>
+    <Container className="flex-1 mt-4">
+      <div className="flex justify-between items-center mb-4 dark:text-white ">
+        <div className="text-3xl font-light">My Products</div>
+        <Link to={'/create-product'} className="dark:bg-fourthd dark:text-black font-semibold p-2 rounded-xl">Add Product</Link>
+      </div>
+      <div>
+        <div className="flex gap-4 flex-wrap">
+          {isLoading ? (
+            <div className="dark:text-white font-light">
+              Loading products...
+            </div>
+          ) : (
+            products?.map((product) => (
+              <Productcard key={product._id} product={product} />
+            ))
+          )}
         </div>
-      )}
+      </div>
     </Container>
   );
 };

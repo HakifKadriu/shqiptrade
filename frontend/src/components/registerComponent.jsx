@@ -30,11 +30,13 @@ const RegisterComponent = () => {
   return (
     <Container className="flex flex-col items-center dark:text-white w-[20rem]">
       <div className="mt-8 p-4 rounded ">
-        <h1 className="text-3xl mb-12 dark:text-white ">Create an account</h1>
+        <h1 className="text-3xl mb-12 dark:text-white font-semibold">
+          Create an account
+        </h1>
         <form className="space-y-4" onSubmit={handleSignup}>
           <input
             type="text"
-            className="form-control dark:bg-[#393E46] dark:text-white dark:focus:bg-[#393E46]  dark:placeholder:text-white"
+            className="form-control hover:ring-2 border-0 dark:bg-thirdd dark:text-white dark:placeholder:text-white focus:ring-4 focus:ring-fifthl hover:ring-fifthl dark:focus:ring-fifthd dark:hover:ring-fifthd"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -43,7 +45,7 @@ const RegisterComponent = () => {
 
           <input
             type="text"
-            className="form-control dark:bg-[#393E46] dark:text-white dark:focus:bg-[#393E46]  dark:placeholder:text-white"
+            className="form-control hover:ring-2 border-0 dark:bg-thirdd dark:text-white dark:placeholder:text-white focus:ring-4 focus:ring-fifthl hover:ring-fifthl dark:focus:ring-fifthd dark:hover:ring-fifthd"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -52,7 +54,7 @@ const RegisterComponent = () => {
 
           <input
             type="password"
-            className="form-control dark:bg-[#393E46] dark:text-white dark:focus:bg-[#393E46]  dark:placeholder:text-white"
+            className="form-control hover:ring-2 border-0 dark:bg-thirdd dark:text-white dark:placeholder:text-white focus:ring-4 focus:ring-fifthl hover:ring-fifthl dark:focus:ring-fifthd dark:hover:ring-fifthd"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -63,7 +65,7 @@ const RegisterComponent = () => {
 
           <button
             type="submit"
-            className="mt-5 font-medium bg-buttond !text-white  p-1 rounded-md w-full"
+            className="mt-5 bg-fifthl border dark:bg-fifthd dark:!text-white text-black font-semibold p-1 rounded-md w-full"
           >
             {isLoading ? (
               <AiOutlineLoading className="animate-spin mx-auto" />

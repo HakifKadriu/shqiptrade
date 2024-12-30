@@ -1,7 +1,7 @@
 import Navbar from "./components/navbar";
 import HomePage from "./pages/HomePage";
 import CreateProduct from "./pages/CreateProduct";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router";
 import Products from "./pages/Products";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -10,12 +10,19 @@ import VerifyEmail from "./pages/VerifyEmail";
 import { useAuthStore } from "./store/auth";
 import { useEffect } from "react";
 import Profile from "./pages/Profile";
+import { Toast } from "./store/toast";
+import Footer from "./components/footer";
+import Explore from "./pages/Explore";
 
 // protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   if (!isAuthenticated) {
+    Toast.fire({
+      icon: "error",
+      title: "You need to be logged in to access this page.",
+    });
     return <Navigate to="/auth" replace />;
   }
 
@@ -25,7 +32,11 @@ const ProtectedRoute = ({ children }) => {
 const IfAuthButNotVerified = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  if (isAuthenticated && user.isVerified == true) {
+  if (isAuthenticated && user.isVerified == false) {
+    Toast.fire({
+      icon: "error",
+      title: "You need to be verified to access this page.",
+    });
     return <Navigate to="/profile" replace />;
   }
 
@@ -36,7 +47,7 @@ const IfAuthButNotVerified = ({ children }) => {
 const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  if (isAuthenticated && user.isVerified) {
+  if (isAuthenticated) {
     return <Navigate to="/" replace />;
   }
 
@@ -44,30 +55,42 @@ const RedirectAuthenticatedUser = ({ children }) => {
 };
 
 function App() {
-  const { checkAuth, isCheckingAuth, isAuthenticated, user } = useAuthStore();
+  const { checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
+  if (isCheckingAuth) return <div>Checking Auth</div>;
+
   return (
     <div
       style={{ minHeight: "100vh" }}
-      className="max-w-full  dark:bg-[#222831]"
+      className=" bg-firstl dark:bg-firstd flex flex-col min-h-100vh"
     >
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/" element={<HomePage />} />
           <Route
-            path="/create"
+            path="/create-product"
             element={
               <ProtectedRoute>
                 <CreateProduct />
               </ProtectedRoute>
             }
           />
-          <Route path="/products" element={<Products />} />
+
+          <Route
+            path="/products"
+            element={
+              <ProtectedRoute>
+                <Products />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/" element={<HomePage />} />
+
           <Route
             path="/auth"
             element={
@@ -76,7 +99,9 @@ function App() {
               </RedirectAuthenticatedUser>
             }
           />
+
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
           <Route
             path="/profile"
             element={
@@ -93,9 +118,11 @@ function App() {
               </IfAuthButNotVerified>
             }
           /> */}
-
           <Route path="*" element={<Navigate to="/" replace />} />
+
+          <Route path="/explore" element={<Explore />} />
         </Routes>
+        <Footer />
       </BrowserRouter>
     </div>
   );

@@ -9,11 +9,8 @@ const Auth = () => {
   const [registerMode, setregisterMode] = useState(2); // 1 for register, 2 for login
 
   return (
-    <Container className="flex justify-center h-[100%] mt-20 ">
-      <div className="flex w-fit h-[60vh] border rounded-xl p-4 dark:bg-transparent gap-1 ">
-        <div className="w-full">
-          <Image className="h-full rounded-xl" src={chairimg}></Image>
-        </div>
+    <Container className="flex justify-center h-[100%] mt-20 flex-1">
+      <div className="flex w-fit h-[60vh] border rounded-xl p-4 bg-fourthl dark:bg-secondd gap-1 ">
         <div className="justify-self-center w-full flex flex-col items-center justify-between">
           {registerMode == 1 ? <RegisterComponent /> : <LoginComponent />}
 
@@ -22,7 +19,9 @@ const Auth = () => {
               <button
                 onClick={() => setregisterMode(1)}
                 className={` ${
-                  registerMode == 1 ? "bg-buttond !border-white text-white" : "bg-transparent"
+                  registerMode == 1
+                    ? " border dark:!border-white border-black !text-black dark:!text-white"
+                    : "bg-transparent"
                 } rounded-s-lg w-full p-1 duration-500 dark:text-white`}
               >
                 Sign Up
@@ -30,7 +29,9 @@ const Auth = () => {
               <button
                 onClick={() => setregisterMode(2)}
                 className={` ${
-                  registerMode == 2 ? "bg-buttond !border-white text-white" : "bg-transparent"
+                  registerMode == 2
+                    ? " border dark:!border-white border-black !text-black dark:!text-white"
+                    : "bg-transparent"
                 } rounded-e-lg w-full p-1 duration-500 dark:text-white`}
               >
                 Sign In

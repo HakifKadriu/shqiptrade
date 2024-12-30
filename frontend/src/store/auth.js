@@ -23,8 +23,6 @@ export const useAuthStore = create((set) => ({
         password,
       });
 
-      console.log(response.data);
-
       set({
         isLoading: false,
         user: response.data.user,
