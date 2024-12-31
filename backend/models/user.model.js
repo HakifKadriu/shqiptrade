@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
+    name: {
+      type: String,
+      required: true,
+      maxLength: [40, "Maximum Name Length is 40."],
+    },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, default: "user" },

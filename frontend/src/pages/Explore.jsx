@@ -12,11 +12,11 @@ const Explore = () => {
 
   return (
     <Container className="flex-1 mt-4 mb-8">
-      <div className="dark:text-white text-3xl font-semibold">
+      <div className="dark:text-white text-3xl font-semibold pl-1">
         Explore Products
       </div>
       <div className="border border-white"></div>
-      <div className="flex gap-4 mt-4 flex-wrap">
+      <div className="flex gap-4 mt-4 flex-wrap justify-center">
         {isLoading ? (
           <div className="dark:text-white font-light">Loading products...</div>
         ) : (
