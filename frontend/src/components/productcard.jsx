@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import { useAuthStore } from "../store/auth";
 import { CgShoppingCart } from "react-icons/cg";
+import { Toast } from "../store/toast";
 
 const Productcard = ({ product }) => {
   const [updatedproduct, setupdatedproduct] = useState(product);
@@ -25,13 +26,6 @@ const Productcard = ({ product }) => {
   };
   const handleShow = () => setShow(true);
 
-  const Toast = Swal.mixin({
-    toast: true,
-    position: "top-start",
-    showConfirmButton: false,
-    timer: 1000,
-  });
-
   const confirmDeletion = (id) => {
     Swal.fire({
       title: "Are you sure you want to delete this product?",
@@ -41,7 +35,10 @@ const Productcard = ({ product }) => {
     }).then((result) => {
       if (result.isConfirmed) {
         deleteProduct(id);
-        Swal.fire("Successfully deleted!", "", "success");
+        Toast.fire({
+          icon: "success",
+          title: "Product deleted successfully",
+        });
       }
     });
   };
@@ -64,9 +61,9 @@ const Productcard = ({ product }) => {
           <FaHeart size={24}/>
         </div> */}
 
-        <div className="flex-1">
+        <div className="flex-1 h-[80%]">
           <img
-            src={bg}
+            src={`http://localhost:5000/productimages/${product.image}`}
             alt="Product"
             className="object-cover w-full h-full rounded-t-2xl cursor-pointer"
             onClick={() => setShowDetailModal(true)}
@@ -78,7 +75,7 @@ const Productcard = ({ product }) => {
             <div className="dark:text-[#8f8f8f]">€ {product.price}</div>
           </div>
           <div className="self-center space-x-2">
-            {product.createdBy._id === user._id && (
+            {product.createdBy._id === user?._id && (
               <>
                 <Button
                   variant="danger"
@@ -109,6 +106,7 @@ const Productcard = ({ product }) => {
         </div>
       </div>
 
+      {/* UPDATE MODAL */}
       <Modal show={show} onHide={handleClose} centered={true} keyboard={false}>
         <Modal.Header className="dark:bg-[#393E46]">
           <Modal.Title className="dark:text-white">Edit Product</Modal.Title>
@@ -167,9 +165,9 @@ const Productcard = ({ product }) => {
           <div className="w-1/2 h-full space-y-4">
             <div className="">
               <img
-                src={bg}
+                src={`http://localhost:5000/productimages/${product.image}`}
                 alt="Product"
-                className="w-full h-64 object-cover rounded-2xl"
+                className="w-full h-64 object-cover object-center rounded-2xl"
               />
             </div>
             <div className="border px-4 py-3 rounded-xl h-full bg-secondd">
@@ -209,7 +207,7 @@ const Productcard = ({ product }) => {
             <div className="w-full border px-4 py-3 rounded-xl bg-secondd text-center">
               <h2 className="text-2xl text-fourthd font-light">Created By</h2>
               <p className="text-base font-thin">
-                {product.createdBy.name === user.name
+                {product.createdBy.name === user?.name
                   ? "You"
                   : product.createdBy.name}
               </p>
@@ -224,7 +222,7 @@ const Productcard = ({ product }) => {
             >
               Close
             </button>
-            {product.createdBy._id === user._id && (
+            {product.createdBy._id === user?._id ? (
               <>
                 <button
                   title="Delete Product"
@@ -243,11 +241,12 @@ const Productcard = ({ product }) => {
                   <FaEdit />
                 </button>
               </>
+            ) : (
+              <button className="p-2 rounded-xl bg-green-400 flex items-center gap-1 justify-evenly text-black border-0 w-fit">
+                <p className="font-semibold">Add to cart </p>
+                <CgShoppingCart size={24} />
+              </button>
             )}
-            <button className="p-2 rounded-xl bg-green-400 flex items-center gap-1 justify-evenly text-black border-0 w-fit">
-              <p className="font-semibold">Add to cart </p>
-              <CgShoppingCart size={24} />
-            </button>
           </div>
         </Modal.Footer>
       </Modal>

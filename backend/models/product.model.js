@@ -18,7 +18,10 @@ const productSchema = new mongoose.Schema(
       },
     ],
     isPublic: { type: Boolean, default: true },
-    // image: { type: String, required: true },
+    image: {
+      type: String,
+      default: "/No_Image_Available.jpg",
+    },
   },
   { timestamps: true }
 );
@@ -26,7 +29,6 @@ const productSchema = new mongoose.Schema(
 const Product = mongoose.model("Product", productSchema);
 
 export default Product;
-
 
 // required properties
 // name, description, price, stock, category, createdBy

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import axios from "axios";
 
 export const useProductStore = create((set) => ({
   product: null,
@@ -11,67 +12,79 @@ export const useProductStore = create((set) => ({
   createProduct: async (newProduct) => {
     set({ isLoading: true, error: null });
     try {
-      if (
-        (!newProduct.name,
-        !newProduct.description,
-        !newProduct.price,
-        !newProduct.stock,
-        !newProduct.category,
-        !newProduct.createdBy)
-      ) {
-        return {
-          success: false,
-          message: "Please fill all the required fields.",
-        };
+      const formData = new FormData();
+      formData.append("name", newProduct.name);
+      formData.append("description", newProduct.description);
+      formData.append("price", newProduct.price);
+      formData.append("stock", newProduct.stock);
+      formData.append("category", newProduct.category);
+      formData.append("createdBy", newProduct.createdBy);
+      formData.append("tags", newProduct.tags);
+      formData.append("isPublic", newProduct.isPublic);
+      if (newProduct.image) {
+        formData.append("image", newProduct.image);
       }
 
-      const res = await fetch("/api/product/create-product", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newProduct),
-      });
+      const response = await axios.post(
+        `/api/product/create-product`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
 
-      const data = await res.json();
       set({
         isLoading: false,
-        product: response.data.data,
+        message: response.data.message,
+        product: response.data.product,
       });
 
-      return {
-        success: data.success,
-        message: "Product created successfully.",
-      };
+      // response
+      // - data
+      // -- message
+      // -- product
+      // -- success
     } catch (error) {
-      set({ error: error.message, isLoading: false });
+      // error
+      // - message: "Request failed..."
+      // - response
+      // -- data
+      // --- message and success
+
+      set({
+        message: error.response.data.message,
+        error: true,
+        isLoading: false,
+      });
+      throw error;
     }
   },
   fetchProducts: async (userId) => {
     set({ isLoading: true });
     try {
-      const res = await fetch(`/api/product/get-user-products/${userId}`);
-      const data = await res.json();
-      set({ isLoading: false, products: data.data });
+      const response = await axios.get(
+        `/api/product/get-user-products/${userId}`
+      );
+      set({ isLoading: false, products: response.data.products });
     } catch (error) {
       set({ message: error.message, isLoading: false, error: true });
     }
   },
   deleteProduct: async (productId) => {
-    const res = await fetch(`/api/product/delete-product/${productId}`, {
-      method: "DELETE",
-    });
-    const data = await res.json();
-    if (!data.success) {
-      return { success: false, message: data.message };
+    set({ isLoading: true });
+    try {
+      const res = await axios.delete(
+        `/api/product/delete-product/${productId}`
+      );
+      set((state) => ({
+        products: state.products.filter((product) => product._id !== productId),
+        message: "Product deleted successfully.",
+        isLoading: false,
+      }));
+    } catch (error) {
+      set({ message: error.message, isLoading: false });
+      throw error;
     }
-    set((state) => ({
-      products: state.products.filter((product) => product._id !== productId),
-    }));
-    return {
-      success: data.success,
-      message: "Product deleted successfully.",
-    };
   },
   updateProduct: async (productId, updatedProduct) => {
     try {
@@ -110,11 +123,13 @@ export const useProductStore = create((set) => ({
     set({ isLoading: true });
 
     try {
-      const res = await fetch(`/api/product/get-random-products?count=${size}`);
-      const data = await res.json();
-      set({ isLoading: false, products: data.data });
+      const res = await axios.get(
+        `/api/product/get-random-products?count=${size}`
+      );
+      set({ success: true, products: res.data.data, isLoading: false });
     } catch (error) {
-      set({ message: error.message, isLoading: false, error: true });
+      set({ error: true, message: error.message });
+      throw error;
     }
   },
 }));

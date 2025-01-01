@@ -38,13 +38,20 @@ const Navbar = () => {
     document.body.classList.toggle("dark");
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-    Toast.fire({
-      icon: "success",
-      title: "Logged Out Successfully",
-    });
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/auth");
+      Toast.fire({
+        icon: "success",
+        title: "Logged Out Successfully",
+      });
+    } catch (error) {
+      Toast.fire({
+        icon: "error",
+        title: "Failed to log out",
+      });
+    }
   };
 
   return (

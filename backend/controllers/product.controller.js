@@ -1,7 +1,5 @@
 import Product from "../models/product.model.js";
 
-// Create and save a new product
-
 export const createProduct = async (req, res) => {
   const {
     name,
@@ -13,6 +11,8 @@ export const createProduct = async (req, res) => {
     tags,
     isPublic,
   } = req.body;
+
+  const image = req.file ? req.file.filename : "defaultImage.jpg";
 
   try {
     if (!name || !description || !price || !stock || !category || !createdBy) {
@@ -31,16 +31,20 @@ export const createProduct = async (req, res) => {
       createdBy,
       tags,
       isPublic,
+      image: image,
     });
 
     await newProduct.save();
+
     res.json({
       success: true,
       message: "Product created successfully",
-      data: newProduct,
+      product: newProduct,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error" });
+    res
+      .status(500)
+      .json({ success: false, message: "Product creation failed." });
   }
 };
 
@@ -50,7 +54,7 @@ export const getProducts = async (req, res) => {
     const products = await Product.find({ createdBy: id }).populate(
       "createdBy"
     );
-    res.json({ success: true, data: products });
+    res.json({ success: true, products: products });
   } catch (error) {
     console.log("Error in getting products", error.message);
     res.status(500).json({ success: false, message: "Server Error" });

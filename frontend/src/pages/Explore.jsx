@@ -4,7 +4,8 @@ import { useProductStore } from "../store/product";
 import Productcard from "../components/productcard";
 
 const Explore = () => {
-  const { getRandomProducts, products, isLoading } = useProductStore();
+  const { getRandomProducts, isLoading, error, message, products } =
+    useProductStore();
 
   useEffect(() => {
     getRandomProducts(30);
@@ -19,10 +20,12 @@ const Explore = () => {
       <div className="flex gap-4 mt-4 flex-wrap justify-center">
         {isLoading ? (
           <div className="dark:text-white font-light">Loading products...</div>
-        ) : (
+        ) : products.length > 0 ? (
           products?.map((product) => (
             <Productcard key={product._id} product={product} />
           ))
+        ) : (
+          <div className="dark:text-white">No products available.</div>
         )}
       </div>
     </Container>

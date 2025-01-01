@@ -4,6 +4,8 @@ import Swal from "sweetalert2";
 import Container from "react-bootstrap/esm/Container";
 import Select from "react-select";
 import { useAuthStore } from "../store/auth";
+import defaultImage from "/defaultImage.jpg";
+import bg from "/124621181.jpg";
 
 const CreateProduct = () => {
   const { user } = useAuthStore();
@@ -16,7 +18,11 @@ const CreateProduct = () => {
     createdBy: user._id,
     tags: [],
     isPublic: true,
+    image: null,
   });
+
+  const [newImage, setnewImage] = useState("");
+
   const [tab, settab] = useState(1);
   const [category, setcategory] = useState("");
 
@@ -45,7 +51,11 @@ const CreateProduct = () => {
   ];
 
   const colorStyles = {
-    control: (styles) => ({ ...styles, backgroundColor: "#404040" }),
+    control: (styles) => ({
+      ...styles,
+      backgroundColor: "#404040",
+      border: "0px",
+    }),
     option: (styles, { data, isDisabled, isFocused, isSelected }) => {
       return { ...styles, color: "white", backgroundColor: "#404040" };
     },
@@ -69,6 +79,52 @@ const CreateProduct = () => {
     setnewproduct({ ...newproduct, category: e.value });
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setnewproduct({ ...newproduct, image: file });
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setnewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const { createProduct, error, message, isLoading } = useProductStore();
+
+  const handleProductCreation = async (e) => {
+    e.preventDefault();
+    try {
+      await createProduct(newproduct);
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Product successfully created.",
+      });
+
+      setnewproduct({
+        name: "",
+        description: "",
+        price: 1,
+        stock: 1,
+        category: "",
+        createdBy: user._id,
+        tags: [],
+        isPublic: true,
+      });
+
+      settab(1);
+    } catch (error) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: error.response.data.message,
+      });
+    }
+  };
+
   function FormatTab(tab) {
     switch (tab) {
       case 1:
@@ -87,6 +143,23 @@ const CreateProduct = () => {
                 value={newproduct.name}
                 onChange={handleTextInsert}
               />
+              <div className="h-80 flex gap-2 ">
+                <div className="flex flex-col w-full">
+                  <label>Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50 file:bg-secondd file:border-0 file:text-white file:rounded-lg"
+                  />
+                </div>
+                <div className="w-full h-full flex justify-center mt-1">
+                  <img
+                    src={newImage || defaultImage}
+                    className="h-full object-cover object-center"
+                  />
+                </div>
+              </div>
               <label className="font-semibold pl-1">
                 Description <span className="text-red-500">*</span>
               </label>
@@ -222,41 +295,6 @@ const CreateProduct = () => {
     }
   }
 
-  const { createProduct, error, message } = useProductStore();
-
-  const handleProductCreation = async (e) => {
-    e.preventDefault();
-    try {
-      await createProduct(newproduct);
-
-      Swal.fire({
-        position: "center",
-        icon: "success",
-        title: "Product successfully created.",
-      });
-
-      setnewproduct({
-        name: "",
-        description: "",
-        price: 1,
-        stock: 1,
-        category: "",
-        createdBy: user._id,
-        tags: [],
-        isPublic: true,
-      });
-
-      settab(1);
-    } catch (error) {
-      console.error(error);
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: "An error occurred while creating the product.",
-      });
-    }
-  };
-
   return (
     <Container className="flex flex-col rounded-2xl px-12 py-4 mt-8 mb-80 gap-4 w-[50vw] border border-white bg-secondl dark:bg-secondd dark:text-white">
       <div>
@@ -265,23 +303,26 @@ const CreateProduct = () => {
       </div>
       <div className="flex justify-around">
         <div
-          className={`border border-white px-2 py-1 rounded-3xl font-medium ${
+          className={`cursor-pointer border border-white px-2 py-1 rounded-3xl font-medium ${
             tab === 1 ? "bg-fourthd text-black " : null
           }`}
+          onClick={() => settab(1)}
         >
           General
         </div>
         <div
-          className={`border border-white px-2 py-1 rounded-3xl font-medium ${
+          className={`cursor-pointer border border-white px-2 py-1 rounded-3xl font-medium ${
             tab === 2 ? "bg-fourthd text-black " : null
           }`}
+          onClick={() => settab(2)}
         >
           Pricing
         </div>
         <div
-          className={`border border-white px-2 py-1 rounded-3xl font-medium ${
+          className={`cursor-pointer border border-white px-2 py-1 rounded-3xl font-medium ${
             tab === 3 ? "bg-green-400 text-black " : null
           }`}
+          onClick={() => settab(3)}
         >
           Publish
         </div>
@@ -299,8 +340,9 @@ const CreateProduct = () => {
             className="bg-green-400 text-black font-semibold py-1 w-full rounded-e-xl"
             type="submit"
             onClick={handleProductCreation}
+            disabled={isLoading}
           >
-            Publish
+            {isLoading ? "Loading..." : "Publish"}
           </button>
         </div>
       ) : tab === 2 ? (

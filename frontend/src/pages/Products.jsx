@@ -19,18 +19,25 @@ const Products = () => {
     <Container className="flex-1 mt-4">
       <div className="flex justify-between items-center mb-4 dark:text-white ">
         <div className="text-3xl font-light">My Products</div>
-        <Link to={'/create-product'} className="dark:bg-fourthd dark:text-black font-semibold p-2 rounded-xl">Add Product</Link>
+        <Link
+          to={"/create-product"}
+          className="dark:bg-fourthd dark:text-black font-semibold p-2 rounded-xl"
+        >
+          Add Product
+        </Link>
       </div>
       <div>
         <div className="flex gap-4 flex-wrap">
           {isLoading ? (
-            <div className="dark:text-white font-light">
+            <div className="dark:text-white font-light bg-white">
               Loading products...
             </div>
-          ) : (
+          ) : products.length > 0 ? (
             products?.map((product) => (
               <Productcard key={product._id} product={product} />
             ))
+          ) : (
+            <div className="dark:text-white ml-auto mr-auto">You have no products.</div>
           )}
         </div>
       </div>
