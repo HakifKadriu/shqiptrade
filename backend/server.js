@@ -18,7 +18,16 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(express.static(path.join(__dirname, 'backend/public')))
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    return res.status(400).json({ success: false, message: err.message });
+  } else if (err) {
+    return res.status(500).json({ success: false, message: "Server Error" });
+  }
+  next();
+});
+
+app.use(express.static(path.join(__dirname, "backend/public")));
 
 // app.use(express.static("public"));
 

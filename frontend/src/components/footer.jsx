@@ -5,7 +5,7 @@ const Footer = () => {
   return (
     <footer className="rounded-lg shadow dark:bg-secondd justify-self-end">
       <div className="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center justify-center">
-        <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+        <span className="text-sm text-gray-500 sm:text-center dark:text-green">
           © 2024{" "}
           <Link to={"/"} className="hover:underline">
             ShqipTrade™

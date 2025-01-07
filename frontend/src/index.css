@@ -3,7 +3,30 @@
 @tailwind utilities;
 
 * {
-    transition: color 800ms ease-in-out;
-    transition: background-color 800ms ease-in-out;
-    /* background-color: #F9F7F7; */
+  transition: color 800ms ease-in-out;
+  transition: background-color 800ms ease-in-out;
+  /* background-color: #F9F7F7; */
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border-radius: 10px;
+  /* background: #f1f1f1; */
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #DAF7A6;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #a0f700;
 }

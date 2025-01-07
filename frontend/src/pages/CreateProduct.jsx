@@ -5,7 +5,9 @@ import Container from "react-bootstrap/esm/Container";
 import Select from "react-select";
 import { useAuthStore } from "../store/auth";
 import defaultImage from "/defaultImage.jpg";
+import { Carousel } from "@material-tailwind/react";
 import bg from "/124621181.jpg";
+import { categories, colorStyles, options } from "../components/dropdownselect";
 
 const CreateProduct = () => {
   const { user } = useAuthStore();
@@ -21,49 +23,10 @@ const CreateProduct = () => {
     image: null,
   });
 
-  const [newImage, setnewImage] = useState("");
+  const [newImage, setnewImage] = useState([]);
 
   const [tab, settab] = useState(1);
   const [category, setcategory] = useState("");
-
-  const options = [
-    { value: "public", label: "Public" },
-    { value: "private", label: "Private" },
-  ];
-
-  const categories = [
-    { value: "electronics", label: "Electronics" },
-    { value: "fashion", label: "Fashion" },
-    { value: "home_kitchen", label: "Home & Kitchen" },
-    { value: "beauty_personal_care", label: "Beauty & Personal Care" },
-    { value: "health_fitness", label: "Health & Fitness" },
-    { value: "books_stationery", label: "Books & Stationery" },
-    { value: "baby_kids", label: "Baby & Kids" },
-    { value: "food_beverages", label: "Food & Beverages" },
-    { value: "automotive", label: "Automotive" },
-    { value: "sports_outdoors", label: "Sports & Outdoors" },
-    { value: "pets", label: "Pets" },
-    { value: "gadgets_innovations", label: "Gadgets & Innovations" },
-    { value: "art_crafts", label: "Art & Crafts" },
-    { value: "music_entertainment", label: "Music & Entertainment" },
-    { value: "tools_industrial", label: "Tools & Industrial" },
-    { value: "travel_luggage", label: "Travel & Luggage" },
-  ];
-
-  const colorStyles = {
-    control: (styles) => ({
-      ...styles,
-      backgroundColor: "#404040",
-      border: "0px",
-    }),
-    option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-      return { ...styles, color: "white", backgroundColor: "#404040" };
-    },
-    placeholder: (styles) => ({ ...styles, color: "white" }),
-    singleValue: (styles) => ({ ...styles, color: "white" }),
-    menuList: (styles) => ({ ...styles, backgroundColor: "#404040" }),
-    input: (styles) => ({ ...styles, color: "white" }),
-  };
 
   const handleArrayInsert = (value) => {
     const tagsArray = value.split(",");
@@ -75,20 +38,17 @@ const CreateProduct = () => {
   };
 
   const handleCategory = (e) => {
-    setcategory(e.value);
+    // setcategory(e.value);
     setnewproduct({ ...newproduct, category: e.value });
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setnewproduct({ ...newproduct, image: file });
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setnewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+    const files = Array.from(e.target.files);
+    setnewproduct({ ...newproduct, image: files });
+    const previewImages = files.map((file) => {
+      return { file, url: URL.createObjectURL(file) };
+    });
+    setnewImage(previewImages);
   };
 
   const { createProduct, error, message, isLoading } = useProductStore();
@@ -120,8 +80,9 @@ const CreateProduct = () => {
       Swal.fire({
         position: "center",
         icon: "error",
-        title: error.response.data.message,
+        title: error.message,
       });
+      console.log(error);
     }
   };
 
@@ -138,7 +99,6 @@ const CreateProduct = () => {
                 type="text"
                 name="name"
                 placeholder="Product Name"
-                required
                 className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50"
                 value={newproduct.name}
                 onChange={handleTextInsert}
@@ -149,23 +109,42 @@ const CreateProduct = () => {
                   <input
                     type="file"
                     accept="image/*"
+                    multiple
                     onChange={handleImageChange}
                     className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50 file:bg-secondd file:border-0 file:text-white file:rounded-lg"
                   />
                 </div>
                 <div className="w-full h-full flex justify-center mt-1">
-                  <img
-                    src={newImage || defaultImage}
-                    className="h-full object-cover object-center"
-                  />
+                  <Carousel
+                    className="rounded-xl"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    {newImage.length > 0 ? (
+                      newImage.map((img, index) => (
+                        <img
+                          key={index}
+                          src={img.url}
+                          alt={`Preview ${index}`}
+                          className="h-full w-full object-cover object-center"
+                        />
+                      ))
+                    ) : (
+                      <img
+                        src={defaultImage}
+                        alt={`Preview default`}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    )}
+                  </Carousel>
                 </div>
               </div>
-              <label className="font-semibold pl-1">
+              <label
+                className="font-semibold pl-1"
+              >
                 Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 name="description"
-                required
                 placeholder="Description"
                 className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50"
                 value={newproduct.description}
@@ -188,7 +167,7 @@ const CreateProduct = () => {
                 styles={colorStyles}
                 options={categories}
                 isSearchable
-                hasValue={category}
+                // defaultValue={searchedValue}
                 onChange={handleCategory}
               />
             </form>
@@ -205,7 +184,6 @@ const CreateProduct = () => {
                 type="number"
                 name="price"
                 placeholder="EUR"
-                required
                 className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50"
                 value={newproduct.price}
                 onChange={handleTextInsert}
@@ -216,7 +194,6 @@ const CreateProduct = () => {
               <input
                 type="number"
                 name="stock"
-                required
                 placeholder="Stock"
                 className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50"
                 value={newproduct.stock}
@@ -234,8 +211,8 @@ const CreateProduct = () => {
               </label>
               <div>
                 <Select
-                  options={options}
                   styles={colorStyles}
+                  options={options}
                   isSearchable={false}
                   defaultValue={options[0]}
                 />
@@ -253,7 +230,6 @@ const CreateProduct = () => {
               <input
                 type="text"
                 placeholder="Product Name"
-                required
                 className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50"
                 value={newproduct.name}
                 onChange={(e) => setnewproduct(e.target.value)}
@@ -263,7 +239,6 @@ const CreateProduct = () => {
               </label>
               <textarea
                 name="description"
-                required
                 placeholder="Description"
                 className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50"
                 value={newproduct.description}
@@ -284,7 +259,6 @@ const CreateProduct = () => {
               </label>
               <input
                 type="text"
-                required
                 className="rounded p-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50"
                 value={newproduct.category}
                 onChange={(e) => setnewproduct(e.target.value)}

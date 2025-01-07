@@ -1,4 +1,5 @@
 import Product from "../models/product.model.js";
+const defaultImage = "/defaultImage.jpg";
 
 export const createProduct = async (req, res) => {
   const {
@@ -12,8 +13,7 @@ export const createProduct = async (req, res) => {
     isPublic,
   } = req.body;
 
-  const image = req.file ? req.file.filename : "defaultImage.jpg";
-
+  const image = req.files.map((file) => file.filename);
   try {
     if (!name || !description || !price || !stock || !category || !createdBy) {
       return res.status(400).json({
@@ -78,18 +78,75 @@ export const getSingleProduct = async (req, res) => {
 };
 
 export const updateProduct = async (req, res) => {
-  try {
-    const { id: productId } = req.params;
-    const { name, price } = req.body;
+  const {
+    name,
+    description,
+    price,
+    stock,
+    category,
+    createdBy,
+    tags,
+    isPublic,
+    existingImages,
+  } = req.body;
 
+  // Get new image filenames from uploaded files
+  const newImages = req.files?.map((file) => file.filename) || [];
+
+  console.log("Existing Images", existingImages);
+  console.log("New Images", newImages);
+
+  // const combinedImages = [...images, ...newImages];
+
+  const { id } = req.params;
+
+  try {
+    // Find the product to update
+    const product = await Product.findById(id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    var updatedImages = undefined;
+    if (!Array.isArray(existingImages) && newImages.length > 0) {
+      if (existingImages !== undefined) {
+        newImages.push(existingImages);
+        updatedImages = newImages;
+      } else {
+        updatedImages = newImages;
+      }
+    } else if (Array.isArray(existingImages) && Array.isArray(newImages)) {
+      updatedImages = [...existingImages, ...newImages];
+    } else {
+      console.log("None are arrays");
+      updatedImages = [defaultImage];
+    }
+
+    // Prepare updated fields
+    const updatedFields = {
+      name: name || product.name,
+      description: description || product.description,
+      price: price || product.price,
+      stock: stock || product.stock,
+      category: category || product.category,
+      createdBy: createdBy || product.createdBy,
+      tags: tags ? tags.split(",") : product.tags, // Convert tags to an array if provided
+      isPublic: isPublic !== undefined ? isPublic : product.isPublic,
+      image: updatedImages,
+    };
+
+    // Update the product
     const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      { name, price },
-      { new: true }
+      id,
+      { $set: updatedFields },
+      { new: true } // Return the updated document
     );
-    res.json({ success: true, data: updatedProduct });
+
+    res.json({ success: true, product: updatedProduct });
   } catch (error) {
-    console.log("Error in updating product", error.message);
+    console.error("Error updating product:", error.message);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };

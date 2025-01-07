@@ -18,10 +18,7 @@ const productSchema = new mongoose.Schema(
       },
     ],
     isPublic: { type: Boolean, default: true },
-    image: {
-      type: String,
-      default: "/No_Image_Available.jpg",
-    },
+    image: [{ type: String, default: "/No_Image_Available.jpg" }],
   },
   { timestamps: true }
 );

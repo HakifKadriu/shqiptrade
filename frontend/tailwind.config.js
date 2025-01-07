@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+const withMT = require("@material-tailwind/react/utils/withMT");
+
+export default withMT({
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -7,7 +9,7 @@ export default {
         firstd: "#000814",
         secondd: "#262626", // secondary bg
         thirdd: "#404040", // placeholder
-        fourthd: "#ffc300ff", 
+        fourthd: "#ffc300ff",
         fifthd: "#0d0d0d", // button
 
         firstl: "#edede9ff",
@@ -15,6 +17,9 @@ export default {
         thirdl: "#f5ebe0ff",
         fourthl: "#e3d5caff",
         fifthl: "#d5bdafff",
+
+
+        green: "#DAF7A6",
       },
       screens: {
         tablet: "640px",
@@ -25,4 +30,4 @@ export default {
   },
   plugins: [],
   darkMode: "class",
-};
+});

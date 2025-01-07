@@ -18,10 +18,10 @@ const Products = () => {
   return (
     <Container className="flex-1 mt-4">
       <div className="flex justify-between items-center mb-4 dark:text-white ">
-        <div className="text-3xl font-light">My Products</div>
+        <div className="text-3xl font-light dark:text-green">My Products</div>
         <Link
           to={"/create-product"}
-          className="dark:bg-fourthd dark:text-black font-semibold p-2 rounded-xl"
+          className="dark:bg-green dark:text-black font-semibold p-2 rounded-xl"
         >
           Add Product
         </Link>

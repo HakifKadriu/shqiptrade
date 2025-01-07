@@ -15,7 +15,7 @@ import Product from "../models/product.model.js";
 
 const router = express.Router();
 
-router.post("/create-product", upload.single("image"), createProduct);
+router.post("/create-product", upload.array("images"), createProduct);
 router.post("/insertInBulk/", insertInBulk);
 router.get("/get-random-products/", getRandomProducts);
 router.delete("/deleteAllProducts/", async (req, res) => {
@@ -25,7 +25,7 @@ router.delete("/deleteAllProducts/", async (req, res) => {
 
 router.get("/get-user-products/:id", getProducts);
 // router.get('/:id', getSingleProduct);
-router.put("/update-product/:id", updateProduct);
+router.put("/update-product/:id", upload.array("newImages"), updateProduct);
 router.delete("/delete-product/:id", deleteProduct);
 
 export default router;
