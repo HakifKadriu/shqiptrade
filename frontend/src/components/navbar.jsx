@@ -193,11 +193,8 @@ const Navbar = () => {
               </Dropdown.Menu>
             </Dropdown>
           ) : (
-            <div onClick={() => navigate("/auth")}>
-              <Image
-                src={darkMode ? loginwhite : logindark}
-                className="w-8 cursor-pointer"
-              />
+            <div className="dark:bg-green text-black self-center py-1 px-2 rounded-lg font-medium cursor-pointer" onClick={() => navigate("/auth")}>
+              Log In
             </div>
           )}
 

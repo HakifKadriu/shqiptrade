@@ -2,13 +2,24 @@ import React, { useEffect } from "react";
 import Container from "react-bootstrap/esm/Container";
 import { useProductStore } from "../store/product";
 import Productcard from "../components/productcard";
+import { Toast } from "../store/toast";
+import { useNavigate } from "react-router";
+import { useAuthStore } from "../store/auth";
 
 const Explore = () => {
+  const navigate = useNavigate();
+
   const { getRandomProducts, isLoading, error, message, products } =
     useProductStore();
 
+  const { isAuthenticated } = useAuthStore();
+
   useEffect(() => {
-    getRandomProducts(30);
+    try {
+      getRandomProducts();
+    } catch (error) {
+      console.log("hi");
+    }
   }, []);
 
   return (
@@ -25,7 +36,17 @@ const Explore = () => {
             <Productcard key={product._id} product={product} />
           ))
         ) : (
-          <div className="dark:text-white">No products available.</div>
+          <div className="dark:text-white">
+            No products available.{" "}
+            {isAuthenticated && (
+              <span
+                className="font-semibold text-green cursor-pointer"
+                onClick={() => navigate("/create-product")}
+              >
+                Add one here.
+              </span>
+            )}
+          </div>
         )}
       </div>
     </Container>

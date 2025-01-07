@@ -9,6 +9,7 @@ import {
   getRandomProducts,
   getSingleProduct,
   insertInBulk,
+  testQuery,
   updateProduct,
 } from "../controllers/product.controller.js";
 import Product from "../models/product.model.js";
@@ -18,6 +19,7 @@ const router = express.Router();
 router.post("/create-product", upload.array("images"), createProduct);
 router.post("/insertInBulk/", insertInBulk);
 router.get("/get-random-products/", getRandomProducts);
+router.put("/testQuery/", testQuery);
 router.delete("/deleteAllProducts/", async (req, res) => {
   await Product.deleteMany();
   res.status(200).json({ message: "All products deleted successfully" });

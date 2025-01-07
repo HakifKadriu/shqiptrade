@@ -21,6 +21,7 @@ export default HomePage;
 // green theme to borders and other stuff
 // image carousel - done
 // clean code (remove unused functions)
+// private products
 // clean console logs
 // choose default product image to show in explore
 // fullscreen images on click - done

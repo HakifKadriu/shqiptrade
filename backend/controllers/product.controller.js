@@ -51,9 +51,10 @@ export const createProduct = async (req, res) => {
 export const getProducts = async (req, res) => {
   const { id } = req.params;
   try {
-    const products = await Product.find({ createdBy: id }).populate(
-      "createdBy"
-    );
+    const products = await Product.find({ createdBy: id }).populate({
+      path: "createdBy",
+      select: "-password",
+    });
     res.json({ success: true, products: products });
   } catch (error) {
     console.log("Error in getting products", error.message);
@@ -90,18 +91,11 @@ export const updateProduct = async (req, res) => {
     existingImages,
   } = req.body;
 
-  // Get new image filenames from uploaded files
   const newImages = req.files?.map((file) => file.filename) || [];
-
-  console.log("Existing Images", existingImages);
-  console.log("New Images", newImages);
-
-  // const combinedImages = [...images, ...newImages];
 
   const { id } = req.params;
 
   try {
-    // Find the product to update
     const product = await Product.findById(id);
     if (!product) {
       return res
@@ -120,29 +114,29 @@ export const updateProduct = async (req, res) => {
     } else if (Array.isArray(existingImages) && Array.isArray(newImages)) {
       updatedImages = [...existingImages, ...newImages];
     } else {
-      console.log("None are arrays");
       updatedImages = [defaultImage];
     }
 
-    // Prepare updated fields
     const updatedFields = {
       name: name || product.name,
       description: description || product.description,
       price: price || product.price,
       stock: stock || product.stock,
       category: category || product.category,
-      createdBy: createdBy || product.createdBy,
-      tags: tags ? tags.split(",") : product.tags, // Convert tags to an array if provided
+      createdBy: createdBy._id || product.createdBy._id,
+      tags: tags ? tags.split(",") : product.tags,
       isPublic: isPublic !== undefined ? isPublic : product.isPublic,
       image: updatedImages,
     };
 
-    // Update the product
     const updatedProduct = await Product.findByIdAndUpdate(
       id,
       { $set: updatedFields },
-      { new: true } // Return the updated document
-    );
+      { new: true }
+    ).populate({
+      path: "createdBy",
+      select: "-password",
+    });
 
     res.json({ success: true, product: updatedProduct });
   } catch (error) {
@@ -174,7 +168,9 @@ export const deleteProduct = async (req, res) => {
 export const getRandomProducts = async (req, res) => {
   try {
     const count = Number(req.query.count);
+
     const randomProducts = await Product.aggregate([
+      { $match: { isPublic: true } },
       { $sample: { size: count } },
     ]);
 
@@ -196,5 +192,17 @@ export const insertInBulk = async (req, res) => {
     res.status(201).json({ success: true, data: insertedProducts });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const testQuery = async (req, res) => {
+  try {
+    const result = await Product.updateMany(
+      {},
+      { createdBy: "6771de24a01705474821c112" }
+    );
+    res.status(200).json({ message: "test query successful", data: result });
+  } catch (error) {
+    res.status(500).json({ message: "Error executing test query", error });
   }
 };

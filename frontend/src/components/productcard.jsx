@@ -24,9 +24,9 @@ const Productcard = ({ product }) => {
 
   const [updatedproduct, setupdatedproduct] = useState({
     ...product,
-    newImages: [], // Store newly added images
+    newImages: [],
   });
-  const { deleteProduct, updateProduct } = useProductStore();
+  const { deleteProduct, updateProduct, getRandomProducts } = useProductStore();
   const { user } = useAuthStore();
   const [show, setShow] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -42,9 +42,14 @@ const Productcard = ({ product }) => {
   const [imageFullScreen, setimageFullScreen] = useState(false);
 
   useEffect(() => {
+    setUpProduct();
+  }, []);
+
+  const setUpProduct = () => {
     setfullCategory(categories.find((c) => c.value === product.category));
     setfullVisibility(options.find((c) => c.value === stringedVisibility));
-  }, []);
+    setupdatedproduct({ ...product, newImages: [] });
+  };
 
   const handleClose = () => {
     setShow(false);
@@ -71,7 +76,8 @@ const Productcard = ({ product }) => {
   };
 
   const handleUpdate = async () => {
-    // clear emtpy tag strings in array
+    const pathname = window.location.pathname;
+
     const cleanedTags = updatedproduct.tags.filter((tag) => tag.trim() !== "");
     setupdatedproduct((prevState) => ({
       ...prevState,
@@ -79,9 +85,11 @@ const Productcard = ({ product }) => {
     }));
 
     try {
-      console.log(updatedproduct);
-
       await updateProduct(product._id, updatedproduct);
+
+      if(pathname === "/explore") {
+        getRandomProducts();
+      }
 
       setShow(false);
 
@@ -90,9 +98,6 @@ const Productcard = ({ product }) => {
         title: "Product Updated",
       });
 
-      setTimeout(() => {
-        navigate(0);
-      }, 1000);
     } catch (error) {
       console.log(error);
       Toast.fire({

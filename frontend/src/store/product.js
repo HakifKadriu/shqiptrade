@@ -102,7 +102,7 @@ export const useProductStore = create((set) => ({
       formData.append("stock", updatedProduct.stock);
       formData.append("category", updatedProduct.category);
       formData.append("isPublic", updatedProduct.isPublic);
-      formData.append("createdBy", updatedProduct.createdBy._id);
+      formData.append("createdBy", updatedProduct.createdBy);
 
       // Append tags as a comma-separated string if it's an array
       if (Array.isArray(updatedProduct.tags)) {
@@ -110,9 +110,6 @@ export const useProductStore = create((set) => ({
       } else {
         formData.append("tags", updatedProduct.tags);
       }
-
-      console.log(updatedProduct.image);
-      console.log(updatedProduct.newImages);
 
       if (Array.isArray(updatedProduct.image)) {
         updatedProduct.image.forEach((imageUrl) =>
@@ -152,7 +149,6 @@ export const useProductStore = create((set) => ({
 
       return { success: true, message: data.message };
     } catch (error) {
-      // Handle errors
       set({
         message: error.message,
         error: true,
@@ -161,8 +157,9 @@ export const useProductStore = create((set) => ({
       throw error;
     }
   },
-  getRandomProducts: async (size) => {
+  getRandomProducts: async () => {
     set({ isLoading: true });
+    const size = 30;
 
     try {
       const res = await axios.get(
@@ -170,7 +167,7 @@ export const useProductStore = create((set) => ({
       );
       set({ success: true, products: res.data.data, isLoading: false });
     } catch (error) {
-      set({ error: true, message: error.message });
+      set({ error: true, message: error.message, isLoading: false });
       throw error;
     }
   },
