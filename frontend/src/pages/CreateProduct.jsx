@@ -56,6 +56,9 @@ const CreateProduct = () => {
   const handleProductCreation = async (e) => {
     e.preventDefault();
     try {
+      if (!newproduct.image){
+        newproduct.image = defaultImage
+      }
       await createProduct(newproduct);
 
       Swal.fire({
@@ -294,7 +297,7 @@ const CreateProduct = () => {
         </div>
         <div
           className={`cursor-pointer border border-white px-2 py-1 rounded-3xl font-medium ${
-            tab === 3 ? "bg-green-400 text-black " : null
+            tab === 3 ? "bg-green text-black " : null
           }`}
           onClick={() => settab(3)}
         >
@@ -311,7 +314,7 @@ const CreateProduct = () => {
             Back
           </button>
           <button
-            className="bg-green-400 text-black font-semibold py-1 w-full rounded-e-xl"
+            className="bg-green text-black font-semibold py-1 w-full rounded-e-xl"
             type="submit"
             onClick={handleProductCreation}
             disabled={isLoading}

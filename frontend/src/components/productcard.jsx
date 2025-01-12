@@ -26,7 +26,8 @@ const Productcard = ({ product }) => {
     ...product,
     newImages: [],
   });
-  const { deleteProduct, updateProduct, getRandomProducts } = useProductStore();
+  const { deleteProduct, updateProduct, getRandomProducts, message } =
+    useProductStore();
   const { user } = useAuthStore();
   const [show, setShow] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -87,7 +88,7 @@ const Productcard = ({ product }) => {
     try {
       await updateProduct(product._id, updatedproduct);
 
-      if(pathname === "/explore") {
+      if (pathname === "/explore") {
         getRandomProducts();
       }
 
@@ -97,12 +98,10 @@ const Productcard = ({ product }) => {
         icon: "success",
         title: "Product Updated",
       });
-
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
       Toast.fire({
         icon: "error",
-        title: error.message,
+        title: message,
       });
     }
   };
@@ -144,10 +143,7 @@ const Productcard = ({ product }) => {
 
   const addImage = (e) => {
     const files = e.target.files;
-    // console.log(files);
-    // files.forEach((imgFile) => console.log(imgFile.name));
     const fileNames = Array.from(files).map((file) => file);
-    console.log(fileNames);
 
     setupdatedproduct({ ...updatedproduct, newImages: fileNames });
     const newImageUrls = Array.from(files).map((file) =>
@@ -163,6 +159,10 @@ const Productcard = ({ product }) => {
         (_, i) => i !== index
       );
       setupdatedproduct({ ...updatedproduct, newImages: updatedImage });
+
+      const updatedImagePreview = previewImages.filter((_, i) => i !== index);
+      setpreviewImages(updatedImagePreview);
+
     } else {
       const updatedImage = updatedproduct.image.filter((_, i) => i !== index);
       setupdatedproduct({ ...updatedproduct, image: updatedImage });

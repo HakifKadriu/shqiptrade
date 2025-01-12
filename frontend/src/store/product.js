@@ -27,7 +27,7 @@ export const useProductStore = create((set) => ({
           formData.append("images", img);
         });
       } else {
-        throw new Error("Images must be an array");
+        formData.append("images", newProduct.image);
       }
 
       const response = await axios.post(
@@ -57,7 +57,7 @@ export const useProductStore = create((set) => ({
       // --- message and success
 
       set({
-        message: error.response.data.message,
+        message: error.message,
         error: true,
         isLoading: false,
       });
@@ -150,7 +150,7 @@ export const useProductStore = create((set) => ({
       return { success: true, message: data.message };
     } catch (error) {
       set({
-        message: error.message,
+        message: error.response.data.message,
         error: true,
         isLoading: false,
       });

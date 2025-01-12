@@ -1,5 +1,8 @@
+import sharp from "sharp";
 import Product from "../models/product.model.js";
 const defaultImage = "/defaultImage.jpg";
+import path from "path";
+import fs from "fs";
 
 export const createProduct = async (req, res) => {
   const {
@@ -14,6 +17,7 @@ export const createProduct = async (req, res) => {
   } = req.body;
 
   const image = req.files.map((file) => file.filename);
+
   try {
     if (!name || !description || !price || !stock || !category || !createdBy) {
       return res.status(400).json({
@@ -31,7 +35,7 @@ export const createProduct = async (req, res) => {
       createdBy,
       tags,
       isPublic,
-      image: image,
+      image: image.length > 0 ? image : defaultImage,
     });
 
     await newProduct.save();
