@@ -5,7 +5,6 @@ import sun from "/sun-svgrepo-com (2).svg";
 import logindark from "/login-dark.svg";
 import loginwhite from "/login-white.svg";
 import Image from "react-bootstrap/Image";
-import { CgProfile } from "react-icons/cg";
 import Dropdown from "react-bootstrap/Dropdown";
 import profile from "/profile.svg";
 import profilelight from "/profilelight.svg";
@@ -13,6 +12,9 @@ import profilelight from "/profilelight.svg";
 import { Link, useNavigate } from "react-router";
 import { useAuthStore } from "../store/auth";
 import { Toast } from "../store/toast";
+
+import { CgProfile } from "react-icons/cg";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 const Navbar = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -65,12 +67,12 @@ const Navbar = () => {
             Shqip Trade
           </Link>
         </div>
-        <div className="flex gap-1 items-center">
+        <div className="gap-1 items-center hidden sm:flex">
           <Link
             to={"/explore"}
             className="text-sm hover:border-b border-black p-1 dark:text-green"
           >
-            Explore
+            Explore Products
           </Link>
           {/* <Link
             to={"/create-product"}
@@ -79,8 +81,9 @@ const Navbar = () => {
             Add Product
           </Link> */}
         </div>
-        <div className="flex gap-2  dark:text-green">
-          <button onClick={toggleDarkMode} className="w-8 ">
+
+        <div className="hidden sm:flex gap-2  dark:text-green">
+          <button onClick={toggleDarkMode} className="w-8">
             {darkMode ? (
               <svg
                 viewBox="0 0 24 24"
@@ -193,12 +196,67 @@ const Navbar = () => {
               </Dropdown.Menu>
             </Dropdown>
           ) : (
-            <div className="dark:bg-green text-black self-center py-1 px-2 rounded-lg font-medium cursor-pointer" onClick={() => navigate("/auth")}>
-              Log In
+            <div
+              className="dark:bg-green text-black self-center py-1 px-2 rounded-lg font-medium cursor-pointer"
+              onClick={() => navigate("/auth")}
+            >
+              Get Started
             </div>
           )}
+        </div>
 
-          {/* {darkMode ? <Image src={loginwhite} /> : <Image src={logindark} />} */}
+        {/* Mobile Menu */}
+        <div className="sm:hidden">
+          {isAuthenticated ? (
+            <Dropdown>
+              <Dropdown.Toggle
+                size="sm"
+                className="after:hidden bg-transparent  border-0 text-black dark:!text-white"
+              >
+                <GiHamburgerMenu size={18} className="text-green" />
+              </Dropdown.Toggle>
+              <Dropdown.Menu className="dark:bg-thirdd">
+                <Dropdown.Item
+                  onClick={() => navigate("/profile")}
+                  className="dark:!text-green bg-transparent hover:bg-transparent"
+                >
+                  My Profile
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => navigate("/products")}
+                  className="dark:!text-green bg-transparent hover:bg-transparent"
+                >
+                  My Products
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={() => navigate("/explore")}
+                  className="dark:!text-green bg-transparent hover:bg-transparent"
+                >
+                  Explore Products
+                </Dropdown.Item>
+                <Dropdown.Divider color="white" />
+                <Dropdown.Item
+                  onClick={toggleDarkMode}
+                  className="dark:!text-green bg-transparent hover:bg-transparent"
+                >
+                  Dark Mode
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onClick={handleLogout}
+                  className="dark:!text-green bg-transparent hover:bg-transparent"
+                >
+                  Log Out
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          ) : (
+            <div
+              className=" dark:bg-green text-black self-center py-1 px-2 rounded-lg font-medium cursor-pointer"
+              onClick={() => navigate("/auth")}
+            >
+              Get Started
+            </div>
+          )}
         </div>
       </div>
     </Container>

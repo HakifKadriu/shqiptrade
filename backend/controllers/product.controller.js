@@ -108,6 +108,8 @@ export const updateProduct = async (req, res) => {
     }
 
     var updatedImages = undefined;
+
+
     if (!Array.isArray(existingImages) && newImages.length > 0) {
       if (existingImages !== undefined) {
         newImages.push(existingImages);
@@ -117,8 +119,10 @@ export const updateProduct = async (req, res) => {
       }
     } else if (Array.isArray(existingImages) && Array.isArray(newImages)) {
       updatedImages = [...existingImages, ...newImages];
+    } else if (existingImages){
+      updatedImages = [existingImages];
     } else {
-      updatedImages = [defaultImage];
+      updatedImages = defaultImage;
     }
 
     const updatedFields = {

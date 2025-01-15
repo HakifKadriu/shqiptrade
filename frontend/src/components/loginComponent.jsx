@@ -54,9 +54,10 @@ const LoginComponent = () => {
 
           <button
             type="submit"
+            onClick={handleLogin}
             className="mt-1 border dark:bg-fifthd bg-fifthl  dark:text-white font-semibold  p-1 rounded-md w-full"
           >
-            Log In
+            {isLoading ? "Loading..." : "Log In"}
           </button>
         </form>
       </div>
