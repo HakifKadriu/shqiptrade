@@ -27,7 +27,7 @@ router.delete("/deleteAllProducts/", async (req, res) => {
 });
 
 router.get("/get-user-products/:id", getProducts);
-// router.get('/:id', getSingleProduct);
+router.get('/get-single-product/:id', getSingleProduct);
 router.put("/update-product/:id", upload.array("newImages"), updateProduct);
 router.delete("/delete-product/:id", deleteProduct);
 

@@ -56,9 +56,11 @@ const CreateProduct = () => {
   const handleProductCreation = async (e) => {
     e.preventDefault();
     try {
+
       if (!newproduct.image){
         newproduct.image = defaultImage
       }
+
       await createProduct(newproduct);
 
       Swal.fire({
@@ -85,7 +87,6 @@ const CreateProduct = () => {
         icon: "error",
         title: error.message,
       });
-      console.log(error);
     }
   };
 

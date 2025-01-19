@@ -1,15 +1,24 @@
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from "url";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-
+import crypto from "crypto";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "backend/public/productimages/");
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '_' + Date.now() + path.extname(file.originalname));
+    const randomHex = crypto.randomBytes(8).toString("hex");
+    cb(
+      null,
+      file.fieldname +
+        "_" +
+        randomHex +
+        "_" +
+        Date.now() +
+        path.extname(file.originalname)
+    );
   },
 });
 

@@ -40,7 +40,8 @@ export default HomePage;
 
 
 // todo:
-// update image errors
+// clean up product auth (messages and errors)
+// update image errors - done
 // product deletion deletes all images in public/productImages
 // multiple images for product - done
 // green theme to borders and other stuff
@@ -48,7 +49,7 @@ export default HomePage;
 // clean code (remove unused functions)
 // private products
 // clean console logs
-// choose default product image to show in explore
+// choose default product image to show in explore - done
 // fullscreen images on click - done
 // white mode fix
 // saving images -- DONE

@@ -22,6 +22,7 @@ export const useProductStore = create((set) => ({
       formData.append("tags", newProduct.tags);
       formData.append("isPublic", newProduct.isPublic);
 
+
       if (Array.isArray(newProduct.image)) {
         newProduct.image.forEach((img) => {
           formData.append("images", img);
@@ -75,6 +76,15 @@ export const useProductStore = create((set) => ({
       set({ message: error.message, isLoading: false, error: true });
     }
   },
+  fetchSingleProduct: async (productId) => {
+    set({ isLoading: true });
+    try {
+      const response = await axios.get(`/api/product/get-single-product/${productId}`);
+      set({ isLoading: false, product: response.data.data});
+    } catch (error) {
+      set({ message: error.message, isLoading: false, error: true });
+    }
+  },
   deleteProduct: async (productId) => {
     set({ isLoading: true });
     try {
@@ -103,6 +113,7 @@ export const useProductStore = create((set) => ({
       formData.append("category", updatedProduct.category);
       formData.append("isPublic", updatedProduct.isPublic);
       formData.append("createdBy", updatedProduct.createdBy);
+      formData.append("defaultImageIndex", updatedProduct.defaultImageIndex);
 
       // Append tags as a comma-separated string if it's an array
       if (Array.isArray(updatedProduct.tags)) {

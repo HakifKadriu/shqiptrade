@@ -93,7 +93,9 @@ export const updateProduct = async (req, res) => {
     tags,
     isPublic,
     existingImages,
+    defaultImageIndex
   } = req.body;
+
 
   const newImages = req.files?.map((file) => file.filename) || [];
 
@@ -135,6 +137,7 @@ export const updateProduct = async (req, res) => {
       tags: tags ? tags.split(",") : product.tags,
       isPublic: isPublic !== undefined ? isPublic : product.isPublic,
       image: updatedImages,
+      defaultImageIndex: defaultImageIndex || product.defaultImageIndex,
     };
 
     const updatedProduct = await Product.findByIdAndUpdate(

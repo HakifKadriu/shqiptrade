@@ -28,6 +28,7 @@ app.use("/api/product", productRouter);
 app.use("/api/auth", authRouter);
 
 if (process.env.NODE_ENV === "production") {
+  
   app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
   app.get("*", (req, res) => {

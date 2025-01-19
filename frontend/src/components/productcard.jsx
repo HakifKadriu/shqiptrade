@@ -7,6 +7,8 @@ import { useProductStore } from "../store/product";
 import { MdDelete, MdDeleteForever } from "react-icons/md";
 import { FaEdit, FaHeart, FaPlus, FaRegHeart } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
+import { IoIosRadioButtonOff } from "react-icons/io";
+import { IoIosRadioButtonOn } from "react-icons/io";
 import Swal from "sweetalert2";
 import Modal from "react-bootstrap/Modal";
 import { useAuthStore } from "../store/auth";
@@ -18,6 +20,7 @@ import Carousel from "react-bootstrap/Carousel";
 import CarouselItem from "react-bootstrap/esm/CarouselItem";
 import ProductCarousel from "./ProductCarousel";
 import { useNavigate } from "react-router";
+import CenteredModal from "./centeredModal";
 
 const Productcard = ({ product }) => {
   const navigate = useNavigate();
@@ -31,6 +34,7 @@ const Productcard = ({ product }) => {
   const { user } = useAuthStore();
   const [show, setShow] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showImageSelectionModal, setshowImageSelectionModal] = useState(false);
   const [category, setcategory] = useState("");
   const [newImage, setnewImage] = useState("");
   const [fullCategory, setfullCategory] = useState("");
@@ -39,12 +43,50 @@ const Productcard = ({ product }) => {
     product.isPublic ? "public" : "private"
   );
   const [previewImages, setpreviewImages] = useState([]);
-
+  const [defaultImageIndex, setdefaultImageIndex] = useState(
+    product.defaultImageIndex
+  );
   const [imageFullScreen, setimageFullScreen] = useState(false);
 
   useEffect(() => {
     setUpProduct();
   }, []);
+
+  const closeImageSelectionModal = () => {
+    setshowImageSelectionModal(false);
+    setdefaultImageIndex(product.defaultImageIndex);
+  };
+
+  const handleDefaultImageIndexChange = () => {
+    setupdatedproduct({
+      ...updatedproduct,
+      defaultImageIndex: defaultImageIndex,
+    });
+
+    Toast.fire({
+      icon: "success",
+      title: "Default image updated successfully",
+    });
+    setshowImageSelectionModal(false);
+  };
+
+  const handleDefaultImageIndex = (index, mode, action) => {
+    if (mode === "existing") {
+      if (action === "set") {
+        setdefaultImageIndex(index);
+      } else {
+        setdefaultImageIndex(0);
+      }
+    }
+
+    if (mode === "updated") {
+      if (action === "set") {
+        setdefaultImageIndex(index);
+      } else {
+        setdefaultImageIndex(0);
+      }
+    }
+  };
 
   const setUpProduct = () => {
     setfullCategory(categories.find((c) => c.value === product.category));
@@ -79,14 +121,20 @@ const Productcard = ({ product }) => {
   const handleUpdate = async () => {
     const pathname = window.location.pathname;
 
-    const cleanedTags = updatedproduct.tags.filter((tag) => tag.trim() !== "");
-    setupdatedproduct((prevState) => ({
-      ...prevState,
-      tags: cleanedTags,
-    }));
+    let localUpdatedProduct = { ...updatedproduct };
+    localUpdatedProduct.tags = localUpdatedProduct.tags.filter(
+      (tag) => tag.trim() !== ""
+    );
+
+    const fullArrayLength =
+      localUpdatedProduct.image.length + previewImages.length;
+
+    if (localUpdatedProduct.defaultImageIndex >= fullArrayLength) {
+      localUpdatedProduct.defaultImageIndex = 0;
+    }
 
     try {
-      await updateProduct(product._id, updatedproduct);
+      await updateProduct(product._id, localUpdatedProduct);
 
       if (pathname === "/explore") {
         getRandomProducts();
@@ -162,7 +210,6 @@ const Productcard = ({ product }) => {
 
       const updatedImagePreview = previewImages.filter((_, i) => i !== index);
       setpreviewImages(updatedImagePreview);
-
     } else {
       const updatedImage = updatedproduct.image.filter((_, i) => i !== index);
       setupdatedproduct({ ...updatedproduct, image: updatedImage });
@@ -171,25 +218,25 @@ const Productcard = ({ product }) => {
 
   return (
     <>
-      <div className="flex flex-col p-2 w-72 h-72 dark:bg-secondd rounded-3xl gap-2">
-        {/* <div>
-          <FaRegHeart size={24}/>
-          <FaHeart size={24}/>
-        </div> */}
-
+      <div className="flex flex-col p-2 w-72 h-auto dark:bg-secondd rounded-3xl gap-2 hover:scale-105 transition-transform">
         <div className="flex-1 h-[80%]">
           <img
-            src={`http://localhost:5000/productimages/${product.image[0]}`}
+            src={`http://localhost:5000/productimages/${
+              product.image[product.defaultImageIndex]
+            }`}
             alt="Product"
-            className="object-cover w-full h-full rounded-t-2xl cursor-pointer"
-            onClick={() => setShowDetailModal(true)}
+            className="object-cover object-center w-full h-full rounded-t-2xl cursor-pointer"
+            // onClick={() => setShowDetailModal(true)}
+            onClick={() => navigate(`/product/${product._id}`)}
           />
         </div>
-        <div className="flex justify-between px-2">
-          <div className="dark:text-white">
-            <div className="font-semibold">{product.name}</div>
-            <div className="dark:text-[#8f8f8f]">€ {product.price}</div>
+        <div className="flex flex-col px-2">
+          <div className="dark:text-white line-clamp-6">
+            <div className="font-semibold" title={product.name}>
+              {product.name}
+            </div>
           </div>
+          <div className="dark:text-[#8f8f8f]">€ {product.price}</div>
           <div className="self-center space-x-2">
             {product.createdBy._id === user?._id && (
               <>
@@ -210,14 +257,6 @@ const Productcard = ({ product }) => {
                 </Button>
               </>
             )}
-            {/* {product.createdBy._id !== user._id && (
-              <Button
-                variant="secondary"
-                className="flex justify-center items-center gap-2 w-full"
-              >
-                <FaHeart />
-              </Button>
-            )} */}
           </div>
         </div>
       </div>
@@ -228,7 +267,7 @@ const Productcard = ({ product }) => {
           <Modal.Title className="dark:text-green">Edit Product</Modal.Title>
         </Modal.Header>
         <Modal.Body className="flex flex-col items-center p-4 gap-2 dark:bg-secondd">
-          <div className="flex flex-col w-1/2 gap-4 ">
+          <div className="flex flex-col w-1/2 gap-4">
             <div className="flex flex-col items-center border px-4 py-3 rounded-xl bg-thirdd text-center">
               <h2 className="text-2xl text-fourthd font-light">Image</h2>
               <div className="w-[80%] flex">
@@ -286,6 +325,13 @@ const Productcard = ({ product }) => {
                     className="hidden rounded p-2 border mt-2 dark:bg-thirdd dark:placeholder:text-white dark:placeholder:opacity-50 file:bg-secondd file:border-0 file:text-white file:rounded-lg"
                   />
                 </label>
+              </div>
+              <div
+                title="The Image that shows as the first one on the product page"
+                className="dark:text-white border p-1 text-sm rounded-lg mt-2 cursor-pointer"
+                onClick={() => setshowImageSelectionModal(true)}
+              >
+                Set Default Picture
               </div>
             </div>
             <div className="border !border-green-500 px-4 py-3 rounded-xl bg-thirdd text-center">
@@ -417,7 +463,6 @@ const Productcard = ({ product }) => {
           <button
             variant="primary"
             onClick={handleUpdate}
-            // onClick={() => console.log(updatedproduct)}
             className="p-2 rounded-xl bg-green-500 flex items-center gap-1 justify-evenly text-black border-0 w-fit font-semibold bg-green"
           >
             Save Changes
@@ -443,20 +488,30 @@ const Productcard = ({ product }) => {
             Product Details
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body className="bg-thirdd flex gap-4 h-[50vh]">
+        <Modal.Body className="bg-thirdd flex gap-4">
           <div className="w-1/2 h-full flex flex-col justify-between gap-2">
             <div>
               <ProductCarousel images={product.image} />
             </div>
-            <div className=" px-4 py-3 rounded-xl bg-secondd ">
-              <h1 className="text-3xl">{product.name}</h1>
+            <div className=" px-4 py-3 rounded-xl bg-secondd min-h-32 border">
+              <h1 className="text-sm line-clamp-6 text-ellipsis">
+                {product.name}
+              </h1>
               <h1>€ {product.price}</h1>
+            </div>
+            <div className="w-full border rounded-xl bg-secondd text-center">
+              <h2 className="text-2xl text-fourthd font-light">Created By</h2>
+              <p className="text-base font-thin">
+                {product.createdBy.name === user?.name
+                  ? "You"
+                  : product.createdBy.name}
+              </p>
             </div>
           </div>
           <div className="flex flex-col justify-between w-full gap-2">
-            <div className="h-80 overflow-auto border px-4 py-3 rounded-xl bg-secondd">
+            <div className="h-80 overflow-auto w-full border px-4 py-3 rounded-xl bg-secondd">
               <h2 className="text-2xl text-fourthd">Description</h2>
-              <p>{product.description}</p>
+              <p className="whitespace-break-spaces">{product.description}</p>
             </div>
             <div className="flex justify-between">
               <div className="border px-4 py-3 rounded-xl bg-secondd text-center">
@@ -481,14 +536,6 @@ const Productcard = ({ product }) => {
                   {new Date(product.createdAt).toLocaleDateString()}
                 </p>
               </div>
-            </div>
-            <div className="w-full border px-4 py-3 rounded-xl bg-secondd text-center">
-              <h2 className="text-2xl text-fourthd font-light">Created By</h2>
-              <p className="text-base font-thin">
-                {product.createdBy.name === user?.name
-                  ? "You"
-                  : product.createdBy.name}
-              </p>
             </div>
           </div>
         </Modal.Body>
@@ -523,7 +570,7 @@ const Productcard = ({ product }) => {
                 </button>
               </>
             ) : (
-              <button className="p-2 rounded-xl bg-green-400 flex items-center gap-1 justify-evenly text-black border-0 w-fit">
+              <button className="p-2 rounded-xl bg-green flex items-center gap-1 justify-evenly text-black border-0 w-fit">
                 <p className="font-semibold">Add to cart </p>
                 <CgShoppingCart size={24} />
               </button>
@@ -531,6 +578,104 @@ const Productcard = ({ product }) => {
           </div>
         </Modal.Footer>
       </Modal>
+
+      {/* Select Default Image */}
+      <Modal show={showImageSelectionModal} onHide={closeImageSelectionModal}>
+        <Modal.Header closeButton className="dark:bg-secondd dark:text-white">
+          <Modal.Title>Choose Default Image</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="dark:bg-secondd w-full">
+          <div className="flex flex-wrap items-center justify-center gap-4 dark:bg-secondd">
+            {updatedproduct.image.map((img, index) => {
+              return (
+                <div
+                  className="relative flex-shrink-0 hover:scale-110 transition-transform"
+                  key={index}
+                >
+                  <img
+                    src={`http://localhost:5000/productimages/${img}`}
+                    alt="Product"
+                    className="object-cover w-40 h-40 rounded-3xl"
+                  />
+                  {defaultImageIndex === index ? (
+                    <IoIosRadioButtonOn
+                      className="absolute top-1 right-1 text-white cursor-pointer"
+                      size={32}
+                      onClick={() =>
+                        handleDefaultImageIndex(index, "existing", "remove")
+                      }
+                    />
+                  ) : (
+                    <IoIosRadioButtonOff
+                      className="absolute top-1 right-1 text-white cursor-pointer"
+                      size={32}
+                      onClick={() =>
+                        handleDefaultImageIndex(index, "existing", "set")
+                      }
+                    />
+                  )}
+                </div>
+              );
+            })}
+            {previewImages.map((img, index) => {
+              return (
+                <div
+                  className="relative flex-shrink-0 hover:scale-110 transition-transform"
+                  key={index}
+                >
+                  <img
+                    src={img}
+                    alt="Product"
+                    className="object-cover w-40 h-40 rounded-3xl"
+                  />
+                  {defaultImageIndex === updatedproduct.image.length + index ? (
+                    <IoIosRadioButtonOn
+                      className="absolute top-1 right-1 text-white cursor-pointer"
+                      size={32}
+                      onClick={() =>
+                        handleDefaultImageIndex(
+                          updatedproduct.image.length + index,
+                          "updated",
+                          "remove"
+                        )
+                      }
+                    />
+                  ) : (
+                    <IoIosRadioButtonOff
+                      className="absolute top-1 right-1 text-white cursor-pointer"
+                      size={32}
+                      onClick={() =>
+                        handleDefaultImageIndex(
+                          updatedproduct.image.length + index,
+                          "updated",
+                          "set"
+                        )
+                      }
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Modal.Body>
+        <Modal.Footer className="dark:bg-secondd">
+          <Button
+            className="bg-fifthd border-0 hover:bg-fifthd"
+            onClick={closeImageSelectionModal}
+          >
+            Close
+          </Button>
+          <Button
+            className="bg-thirdd border-0 hover:bg-thirdd"
+            onClick={handleDefaultImageIndexChange}
+          >
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Full Name Modal */}
+      <CenteredModal />
     </>
   );
 };

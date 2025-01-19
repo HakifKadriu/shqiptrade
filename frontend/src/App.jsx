@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import { Toast } from "./store/toast";
 import Footer from "./components/footer";
 import Explore from "./pages/Explore";
+import ProductDetails from "./pages/ProductDetails";
 
 // protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -101,6 +102,7 @@ function App() {
           />
 
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/product/:productId" element={<ProductDetails />} />
 
           <Route
             path="/profile"
