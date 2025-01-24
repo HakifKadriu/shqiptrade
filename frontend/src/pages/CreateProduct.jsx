@@ -43,6 +43,7 @@ const CreateProduct = () => {
   };
 
   const handleImageChange = (e) => {
+    console.log(e.target.files)
     const files = Array.from(e.target.files);
     setnewproduct({ ...newproduct, image: files });
     const previewImages = files.map((file) => {
@@ -85,8 +86,9 @@ const CreateProduct = () => {
       Swal.fire({
         position: "center",
         icon: "error",
-        title: error.message,
+        title: error.response.data.message,
       });
+      console.log(error);
     }
   };
 

@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import crypto from "crypto";
 
-const storage = multer.diskStorage({
+const storage = multer.memoryStorage({
   destination: function (req, file, cb) {
     cb(null, "backend/public/productimages/");
   },

@@ -218,16 +218,16 @@ const Productcard = ({ product }) => {
 
   return (
     <>
-      <div className="flex flex-col p-2 w-72 h-auto dark:bg-secondd rounded-3xl gap-2 hover:scale-105 transition-transform">
+      <div className="flex flex-col p-2 w-72 bg-fifthl dark:bg-secondd rounded-3xl gap-2 hover:scale-105 transition-transform">
         <div className="flex-1 h-[80%]">
           <img
-            src={`http://localhost:5000/productimages/${
+            src={`https://i.imgur.com/${
               product.image[product.defaultImageIndex]
             }`}
             alt="Product"
-            className="object-cover object-center w-full h-full rounded-t-2xl cursor-pointer"
-            // onClick={() => setShowDetailModal(true)}
+            className="object-cover object-center w-full rounded-t-2xl cursor-pointer"
             onClick={() => navigate(`/product/${product._id}`)}
+            style={{ maxHeight: "400px" }}
           />
         </div>
         <div className="flex flex-col px-2">
@@ -276,7 +276,7 @@ const Productcard = ({ product }) => {
                     return (
                       <div className="relative flex-shrink-0" key={index}>
                         <img
-                          src={`http://localhost:5000/productimages/${img}`}
+                          src={`https://i.imgur.com/${img}`}
                           alt="Product"
                           className="object-cover w-40 h-40 rounded-3xl"
                         />

@@ -14,6 +14,7 @@ import { Toast } from "./store/toast";
 import Footer from "./components/footer";
 import Explore from "./pages/Explore";
 import ProductDetails from "./pages/ProductDetails";
+import AdminDashboard from "./pages/AdminDashboard";
 
 // protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -39,6 +40,16 @@ const IfAuthButNotVerified = ({ children }) => {
       title: "You need to be verified to access this page.",
     });
     return <Navigate to="/profile" replace />;
+  }
+
+  return children;
+};
+
+const AdminOnly = ({ children }) => {
+  const { user } = useAuthStore();
+
+  if (user && user.role !== "admin") {
+    return <Navigate to="/" replace />;
   }
 
   return children;
@@ -112,6 +123,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/admindashboard"
+            element={
+              <AdminOnly>
+                <AdminDashboard />
+              </AdminOnly>
+            }
+          />
+
           {/* <Route
             path="/verify-email"
             element={

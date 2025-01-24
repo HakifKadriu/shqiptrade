@@ -7,11 +7,14 @@ export const useProductStore = create((set) => ({
   error: null,
   isLoading: false,
   message: null,
+  rateLimits: null,
 
   setProducts: (products) => set({ products }),
   createProduct: async (newProduct) => {
     set({ isLoading: true, error: null });
     try {
+      console.log("new product: ", newProduct);
+
       const formData = new FormData();
       formData.append("name", newProduct.name);
       formData.append("description", newProduct.description);
@@ -22,13 +25,12 @@ export const useProductStore = create((set) => ({
       formData.append("tags", newProduct.tags);
       formData.append("isPublic", newProduct.isPublic);
 
-
       if (Array.isArray(newProduct.image)) {
         newProduct.image.forEach((img) => {
-          formData.append("images", img);
+          formData.append("image", img);
         });
       } else {
-        formData.append("images", newProduct.image);
+        formData.append("image", newProduct.image);
       }
 
       const response = await axios.post(
@@ -43,20 +45,9 @@ export const useProductStore = create((set) => ({
         isLoading: false,
         message: response.data.message,
         product: response.data.product,
+        rateLimits: response.data.rateLimits,
       });
-
-      // response
-      // - data
-      // -- message
-      // -- product
-      // -- success
     } catch (error) {
-      // error
-      // - message: "Request failed..."
-      // - response
-      // -- data
-      // --- message and success
-
       set({
         message: error.message,
         error: true,
@@ -79,8 +70,10 @@ export const useProductStore = create((set) => ({
   fetchSingleProduct: async (productId) => {
     set({ isLoading: true });
     try {
-      const response = await axios.get(`/api/product/get-single-product/${productId}`);
-      set({ isLoading: false, product: response.data.data});
+      const response = await axios.get(
+        `/api/product/get-single-product/${productId}`
+      );
+      set({ isLoading: false, product: response.data.data });
     } catch (error) {
       set({ message: error.message, isLoading: false, error: true });
     }

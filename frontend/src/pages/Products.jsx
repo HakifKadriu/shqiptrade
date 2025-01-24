@@ -27,7 +27,13 @@ const Products = () => {
         </Link>
       </div>
       <div>
-        <div className="flex gap-4 flex-wrap">
+        <div
+          className="grid gap-4 mt-4 justify-center"
+          style={{
+            gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))",
+            alignItems: "start", 
+          }}
+        >
           {isLoading ? (
             <div className="dark:text-white font-light bg-white">
               Loading products...
@@ -37,7 +43,9 @@ const Products = () => {
               <Productcard key={product._id} product={product} />
             ))
           ) : (
-            <div className="dark:text-white ml-auto mr-auto">You have no products.</div>
+            <div className="dark:text-white ml-auto mr-auto">
+              You have no products.
+            </div>
           )}
         </div>
       </div>

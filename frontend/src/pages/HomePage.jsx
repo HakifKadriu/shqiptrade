@@ -11,7 +11,7 @@ const HomePage = () => {
     <div className="dark:text-white flex flex-col flex-1">
       <div className="flex flex-col justify-center min-h-[100vh] items-center font-semibold">
         <h1 className="text-9xl mb-8 transition-transform">Shqip Trade</h1>
-        <h3 className="font-thin">Insert Company Moto</h3>
+        <h3 className="font-thin">Connecting Businesses, Empowering Shoppers!</h3>
       </div>
 
       <button onClick={() => navigate('/explore')}>Explore Products</button>

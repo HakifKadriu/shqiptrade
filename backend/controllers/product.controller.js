@@ -1,8 +1,26 @@
 import sharp from "sharp";
 import Product from "../models/product.model.js";
-const defaultImage = "/defaultImage.jpg";
+const defaultImage = "defaultImage.jpg";
 import path from "path";
 import fs from "fs";
+import dotenv from "dotenv";
+import axios from "axios";
+import FormData from "form-data";
+
+dotenv.config();
+
+const getRateLimits = (req) => {
+  const rateLimits = {};
+
+  rateLimits.clientlimit = req.headers["x-ratelimit-clientlimit"];
+  rateLimits.clientremaining = req.headers["x-ratelimit-clientremaining"];
+  rateLimits.clientreset = req.headers["x-ratelimit-clientreset"];
+  rateLimits.userlimit = req.headers["x-ratelimit-userlimit"];
+  rateLimits.userremaining = req.headers["x-ratelimit-userremaining"];
+  rateLimits.userreset = req.headers["x-ratelimit-userreset"];
+
+  return rateLimits;
+};
 
 export const createProduct = async (req, res) => {
   const {
@@ -15,15 +33,39 @@ export const createProduct = async (req, res) => {
     tags,
     isPublic,
   } = req.body;
-
-  const image = req.files.map((file) => file.filename);
+  const imageFiles = req.files;
 
   try {
-    if (!name || !description || !price || !stock || !category || !createdBy) {
-      return res.status(400).json({
-        success: false,
-        message: "Please fill all the required fields.",
-      });
+    var rateLimits = {};
+    const imageUrls = [];
+    if (imageFiles || imageFiles.length !== 0) {
+      for (const imageFile of imageFiles) {
+        const imgData = new FormData();
+        imgData.append("image", imageFile.buffer, imageFile.originalname);
+
+        const response = await axios.post(
+          "https://api.imgur.com/3/upload",
+          imgData,
+          {
+            headers: {
+              Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response.data.success) {
+          rateLimits = getRateLimits(response);
+
+          let imageId = response.data.data.id;
+          let imageType = response.data.data.type.split("/")[1];
+
+          let imageLink = imageId + "." + imageType;
+          imageUrls.push(imageLink);
+        } else {
+          throw new Error("Imgur upload failed.");
+        }
+      }
     }
 
     const newProduct = new Product({
@@ -35,17 +77,20 @@ export const createProduct = async (req, res) => {
       createdBy,
       tags,
       isPublic,
-      image: image.length > 0 ? image : defaultImage,
+      image: imageUrls || defaultImage,
     });
 
+    // Save product to the database
     await newProduct.save();
 
     res.json({
       success: true,
       message: "Product created successfully",
       product: newProduct,
+      rateLimits,
     });
   } catch (error) {
+    console.error(error);
     res
       .status(500)
       .json({ success: false, message: "Product creation failed." });
@@ -93,9 +138,8 @@ export const updateProduct = async (req, res) => {
     tags,
     isPublic,
     existingImages,
-    defaultImageIndex
+    defaultImageIndex,
   } = req.body;
-
 
   const newImages = req.files?.map((file) => file.filename) || [];
 
@@ -111,7 +155,6 @@ export const updateProduct = async (req, res) => {
 
     var updatedImages = undefined;
 
-
     if (!Array.isArray(existingImages) && newImages.length > 0) {
       if (existingImages !== undefined) {
         newImages.push(existingImages);
@@ -121,7 +164,7 @@ export const updateProduct = async (req, res) => {
       }
     } else if (Array.isArray(existingImages) && Array.isArray(newImages)) {
       updatedImages = [...existingImages, ...newImages];
-    } else if (existingImages){
+    } else if (existingImages) {
       updatedImages = [existingImages];
     } else {
       updatedImages = defaultImage;
@@ -157,21 +200,33 @@ export const updateProduct = async (req, res) => {
 };
 
 export const deleteProduct = async (req, res) => {
-  const { id: productId } = req.params;
+  const { id } = req.params;
   try {
-    const deletedProduct = await Product.findByIdAndDelete(productId);
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // product.image.map((img) => deleteImageFromImgur(img));
+
+    const deletedProduct = await Product.findByIdAndDelete(id);
+
     if (!deletedProduct) {
       return res
         .status(404)
         .json({ success: false, message: "Product not found" });
     }
+
     res.json({
       success: true,
       message: "Product deleted successfully",
       data: deletedProduct,
     });
   } catch (error) {
-    console.log("Error in deleting product", error.message);
+    console.log("Error in deleting product", error.response);
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
@@ -215,5 +270,24 @@ export const testQuery = async (req, res) => {
     res.status(200).json({ message: "test query successful", data: result });
   } catch (error) {
     res.status(500).json({ message: "Error executing test query", error });
+  }
+};
+
+const deleteImageFromImgur = async (image) => {
+  console.log("image: ", image);
+
+  try {
+    const response = await axios.delete(
+      `https://api.imgur.com/3/image/${image}`,
+      {
+        headers: {
+          Authorization: `Client-ID ${process.env.IMGUR_CLIENT_ID}`,
+        },
+      }
+    );
+
+    console.log("Image deleted successfully");
+  } catch (error) {
+    console.log(`Rate limit exceeded. Try again in later.`, error.response);
   }
 };

@@ -13,11 +13,12 @@ import {
   updateProduct,
 } from "../controllers/product.controller.js";
 import Product from "../models/product.model.js";
+
 import multer from "multer";
 
 const router = express.Router();
 
-router.post("/create-product", upload.array("images"), createProduct);
+router.post("/create-product", upload.array("image"), createProduct);
 router.post("/insertInBulk/", insertInBulk);
 router.get("/get-random-products/", getRandomProducts);
 router.put("/testQuery/", testQuery);

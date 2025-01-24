@@ -15,20 +15,21 @@ const Explore = () => {
   const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
-    try {
-      getRandomProducts();
-    } catch (error) {
-      console.log("hi");
-    }
+    getRandomProducts();
   }, []);
 
   return (
     <Container className="flex-1 mt-4 mb-8">
-      <div className="dark:text-white text-3xl font-semibold pl-1">
+      <div className="dark:text-white pb-1 border-b border-fifthl dark:border-white text-3xl font-semibold pl-1">
         Explore Products
       </div>
-      <div className="border border-white"></div>
-      <div className="flex gap-4 mt-4 flex-wrap justify-center">
+      <div
+        className="grid gap-4 mt-4 justify-center"
+        style={{
+          gridTemplateColumns: "repeat(auto-fit, minmax(18rem, 1fr))",
+          alignItems: "start",
+        }}
+      >
         {isLoading ? (
           <div className="dark:text-white font-light">Loading products...</div>
         ) : products.length > 0 ? (
